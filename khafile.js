@@ -13,6 +13,7 @@ project.addSources("src");
 project.addDefine("SENGINE_DEBUG_FPS");
 
 // s2D Compiler Flags
+project.addDefine("S2D_RP_ENV_LIGHTING");
 project.addDefine("S2D_PP");
 project.addDefine("S2D_PP_DOF");
 project.addDefine("S2D_PP_DOF_QUALITY 1");
