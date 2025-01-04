@@ -18,8 +18,10 @@ class Main {
 	public static function main() {
 		SEngine.start("Game", 1024, 1024, function() {
 			S2D.scale = 2;
+			S2D.resolutionScale = 1.0 / 4.0;
 			S2D.stage.environmentMap = Assets.images.environment;
 			#if S2D_PP
+			PostProcessing.filters.push(Filter.GaussianBlur);
 			PostProcessing.filters.push(Filter.Sharpen);
 			#end
 
