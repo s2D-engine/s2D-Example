@@ -1,7 +1,5 @@
 package;
 
-import s2d.graphics.Filter;
-import s2d.objects.Light;
 import kha.Assets;
 // sengine
 import sengine.SEngine;
@@ -9,7 +7,9 @@ import sengine.SEngine;
 import sui.elements.MouseArea;
 // s2d
 import s2d.S2D;
+import s2d.objects.Light;
 import s2d.objects.Sprite;
+import s2d.graphics.Filter;
 import s2d.graphics.PostProcessing;
 
 using s2d.utils.FastMatrix4Ext;
@@ -19,14 +19,16 @@ class Main {
 		SEngine.start("Game", 1024, 1024, function() {
 			S2D.scale = 2;
 			S2D.stage.environmentMap = Assets.images.environment;
-
+			#if S2D_PP
 			PostProcessing.filters.push(Filter.Sharpen);
+			#end
 
 			var sprite = new Sprite();
 			sprite.material.colorMap = Assets.images.color;
 			sprite.material.normalMap = Assets.images.normal;
 			sprite.material.ormMap = Assets.images.orm;
 			sprite.material.glowMap = Assets.images.glow;
+			sprite.material.depthScale = 1.0;
 
 			var light = new Light();
 			light.color = Color.fromFloats(0.9, 0.9, 0.5);
