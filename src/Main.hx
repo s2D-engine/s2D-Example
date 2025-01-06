@@ -1,5 +1,6 @@
 package;
 
+import kha.System;
 import kha.Assets;
 // sengine
 import sengine.SEngine;
@@ -20,8 +21,10 @@ class Main {
 			S2D.scale = 1;
 			S2D.stage.environmentMap = Assets.images.environment;
 			#if S2D_PP
-			PostProcessing.filters.push(Filter.GaussianBlur);
 			PostProcessing.filters.push(Filter.Sharpen);
+			#if S2D_PP_FISHEYE
+			PostProcessing.fisheye.strength = 2.0;
+			#end
 			#end
 
 			var sprite = new Sprite();
@@ -33,8 +36,9 @@ class Main {
 
 			var light = new Light();
 			light.color = Color.fromFloats(0.9, 0.9, 0.5);
+			light.radius = 1.0;
 			light.power = 50;
-			light.transformation.translate(-0.5, 0.5, -1.5);
+			light.transformation.translate(-0.5, 0.5, 2.5);
 
 			var m = new MouseArea(SEngine.ui);
 			m.x = 0;

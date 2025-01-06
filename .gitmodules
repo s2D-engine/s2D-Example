@@ -1,3 +1,3 @@
 [submodule "sEngine"]
-	path = subprojects/sEngine
+	path = submodules/sEngine
 	url = https://github.com/sEngineLibs/sEngine
