@@ -1,0 +1,3 @@
+[submodule "s2D"]
+	path = submodules/s2D
+	url = https://github.com/s2D-engine/s2D
