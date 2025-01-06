@@ -1,6 +1,6 @@
 let project = new Project("New Project");
 
-await project.addProject("subprojects/sEngine");
+await project.addProject("submodules/sEngine");
 
 project.addAssets("assets/**", {
     nameBaseDir: "assets",
@@ -10,7 +10,7 @@ project.addAssets("assets/**", {
 project.addSources("src");
 
 // sEngine Compiler Flags
-project.addDefine("SENGINE_DEBUG_FPS");
+project.addDefine("S2D_DEBUG_FPS");
 
 // s2D Compiler Flags
 project.addDefine("S2D_RP_ENV_LIGHTING");
