@@ -15,11 +15,14 @@ class Main {
 	public static function main() {
 		System.start({title: "Game", width: 1024, height: 1024}, function(window) {
 			S2D.init(window.width, window.height);
+			window.notifyOnResize(S2D.resize);
+
 			S2D.scale = 1;
+			
 			#if S2D_PP
-			PostProcessing.filters.push(Filter.Sharpen);
+			// PostProcessing.filters.push(Filter.Sharpen);
 			#if S2D_PP_FISHEYE
-			PostProcessing.fisheye.strength = 2.0;
+			PostProcessing.fisheye.strength = 0.0;
 			#end
 			#end
 

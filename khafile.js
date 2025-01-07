@@ -1,18 +1,16 @@
 let project = new Project("New Project");
 
-await project.addProject("submodules/sEngine");
+await project.addProject("submodules/s2D");
 
+project.addSources("src");
 project.addAssets("assets/**", {
     nameBaseDir: "assets",
     destination: "assets/{dir}/{name}",
     name: "{dir}/{name}",
 });
-project.addSources("src");
 
-// sEngine Compiler Flags
+// Compiler Flags
 project.addDefine("S2D_DEBUG_FPS");
-
-// s2D Compiler Flags
 project.addDefine("S2D_RP_ENV_LIGHTING");
 project.addDefine("S2D_PP");
 project.addDefine("S2D_PP_DOF");
