@@ -1,7 +1,5 @@
 let project = new Project("New Project");
 
-await project.addProject("submodules/s2D");
-
 project.addSources("src");
 project.addAssets("assets/**", {
     nameBaseDir: "assets",
@@ -9,15 +7,18 @@ project.addAssets("assets/**", {
     name: "{dir}/{name}",
 });
 
-// Compiler Flags
-project.addDefine("S2D_DEBUG_FPS");
-project.addDefine("S2D_RP_ENV_LIGHTING");
-project.addDefine("S2D_PP");
-project.addDefine("S2D_PP_DOF");
-project.addDefine("S2D_PP_DOF_QUALITY 1");
-project.addDefine("S2D_PP_MIST");
-project.addDefine("S2D_PP_FISHEYE");
-project.addDefine("S2D_PP_FILTER");
-project.addDefine("S2D_PP_COMPOSITOR");
+// s2D Compiler Flags
+process.defines = [
+    "S2D_DEBUG_FPS",
+    "S2D_RP_ENV_LIGHTING",
+    "S2D_PP",
+    "S2D_PP_DOF",
+    "S2D_PP_DOF_QUALITY",
+    "S2D_PP_MIST",
+    "S2D_PP_FISHEYE",
+    "S2D_PP_FILTER",
+    "S2D_PP_COMPOSITOR",
+];
+await project.addProject("submodules/s2D");
 
 resolve(project);
