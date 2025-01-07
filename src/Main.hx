@@ -1,5 +1,6 @@
 package;
 
+import kha.Scheduler;
 import kha.System;
 import kha.Assets;
 // s2d
@@ -18,9 +19,9 @@ class Main {
 			window.notifyOnResize(S2D.resize);
 
 			S2D.scale = 1;
-			
+
 			#if S2D_PP
-			// PostProcessing.filters.push(Filter.Sharpen);
+			PostProcessing.filters.push(Filter.BoxBlur);
 			#if S2D_PP_FISHEYE
 			PostProcessing.fisheye.strength = 0.0;
 			#end
@@ -36,6 +37,7 @@ class Main {
 				sprite.material.normalMap = Assets.images.normal;
 				sprite.material.ormMap = Assets.images.orm;
 				sprite.material.glowMap = Assets.images.glow;
+				sprite.material.glowStrength = 0.0;
 				sprite.material.depthScale = 1.0;
 
 				var light = new Light();
@@ -47,6 +49,10 @@ class Main {
 				System.notifyOnFrames(function(frames) {
 					S2D.render(frames[0]);
 				});
+
+				Scheduler.addTimeTask(function() {
+					sprite.transformation.rotate(0.5);
+				}, 0, 1 / 165);
 			});
 		});
 	}
