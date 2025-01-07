@@ -8,6 +8,7 @@ project.addAssets("assets/**", {
 });
 
 // s2D Compiler Flags
+process.verbose = true;
 process.defines = [
     "S2D_DEBUG_FPS",
     "S2D_RP_ENV_LIGHTING",
@@ -19,6 +20,6 @@ process.defines = [
     "S2D_PP_FILTER",
     "S2D_PP_COMPOSITOR",
 ];
-await project.addProject("submodules/s2D");
+await project.addProject("s2D");
 
 resolve(project);
