@@ -2,11 +2,11 @@ package;
 
 import kha.System;
 import kha.Assets;
-import kha.Scheduler;
 import kha.input.KeyCode;
-import kha.input.Keyboard;
 // s2d
 import s2d.S2D;
+import s2d.core.Timer;
+import s2d.core.Input;
 import s2d.objects.Light;
 import s2d.objects.Sprite;
 import s2d.graphics.PostProcessing;
@@ -22,22 +22,26 @@ class Main {
 			height: 1024,
 			framebuffer: {verticalSync: false}
 		}, function(window) {
-			Keyboard.get().notify(function(key:KeyCode) {
-				if (key == F11)
-					window.mode = Fullscreen;
-				if (key == F12)
-					window.mode = Windowed;
-				if (key == Escape)
-					System.stop();
-			});
 			S2D.init(window.width, window.height);
 			window.notifyOnResize(S2D.resize);
+
+			Input.keyboard.notify(function(key:KeyCode) {
+				switch (key) {
+					case F11:
+						window.mode = Fullscreen;
+					case F12:
+						window.mode = Windowed;
+					case Escape:
+						System.stop();
+					default:
+						null;
+				}
+			});
 
 			S2D.scale = 1;
 
 			#if S2D_PP_FILTER
-			for (i in 0...32)
-				PostProcessing.filter.addKernel(Kernel.GaussianBlur);
+			PostProcessing.filter.addKernel(Kernel.Sharpen);
 			#if S2D_PP_FISHEYE
 			PostProcessing.fisheye.strength = 0.0;
 			#end
@@ -51,12 +55,23 @@ class Main {
 				#end
 
 				var sprite = new Sprite();
+				var tilesheet = sprite.material.tilesheet;
+				tilesheet.colsNum = 2;
+				tilesheet.rowsNum = 2;
+
+				var timer = new Timer(() -> {
+					tilesheet.advance();
+				}, 1.0 / tilesheet.length);
+
+				Input.keyboard.notify(function(key) {
+					if (key == W)
+						trace(timer.repeat(tilesheet.length, false));
+				});
+
 				sprite.material.colorMap = Assets.images.color;
 				sprite.material.normalMap = Assets.images.normal;
 				sprite.material.ormMap = Assets.images.orm;
 				sprite.material.glowMap = Assets.images.glow;
-				sprite.material.glowStrength = 1.0;
-				sprite.material.depthScale = 1.0;
 
 				var light = new Light();
 				light.color = Color.fromFloats(0.9, 0.9, 0.5);
@@ -67,10 +82,6 @@ class Main {
 				System.notifyOnFrames(function(frames) {
 					S2D.render(frames[0]);
 				});
-
-				Scheduler.addTimeTask(function() {
-					sprite.transformation.rotate(0.5);
-				}, 0, 1 / 165);
 			});
 		});
 	}
