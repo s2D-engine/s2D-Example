@@ -1,5 +1,7 @@
 package;
 
+import s2d.animation.Easing;
+import s2d.animation.Motion;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
@@ -38,13 +40,16 @@ class Main {
 				}
 			});
 
-			S2D.scale = 1;
+			S2D.scale = 2;
 
 			#if S2D_PP_FILTER
 			PostProcessing.filter.addKernel(Kernel.Sharpen);
-			#if S2D_PP_FISHEYE
-			PostProcessing.fisheye.strength = 0.0;
 			#end
+			#if S2D_PP_FISHEYE
+			PostProcessing.fisheye.strength = -1.0;
+			#end
+			#if S2D_PP_COMPOSITOR
+			PostProcessing.compositor.vignetteStrength = 0.0;
 			#end
 
 			Assets.loadEverything(function() {
@@ -55,29 +60,38 @@ class Main {
 				#end
 
 				var sprite = new Sprite();
-				var tilesheet = sprite.material.tilesheet;
-				tilesheet.colsNum = 2;
-				tilesheet.rowsNum = 2;
-
-				var timer = new Timer(() -> {
-					tilesheet.advance();
-				}, 1.0 / tilesheet.length);
-
-				Input.keyboard.notify(function(key) {
-					if (key == W)
-						trace(timer.repeat(tilesheet.length, false));
-				});
-
-				sprite.material.colorMap = Assets.images.color;
+				sprite.material.albedoMap = Assets.images.albedo;
 				sprite.material.normalMap = Assets.images.normal;
 				sprite.material.ormMap = Assets.images.orm;
-				sprite.material.glowMap = Assets.images.glow;
+				sprite.material.emissionMap = Assets.images.emission;
+
+				var timer = new Timer(() -> {
+					sprite.transformation.rotate(1.0);
+				}, 0.01);
+				timer.repeat(100000);
+
+				var p = 1.0;
+				var d = 0.5;
+				Input.keyboard.notify(function(key) {
+					if (key == W)
+						Motion.tween(sprite.transformation, {_31: sprite.transformation._31 - p}, d).ease(Easing.OutBounce);
+					if (key == S)
+						Motion.tween(sprite.transformation, {_31: sprite.transformation._31 + p}, d).ease(Easing.OutBounce);
+					if (key == A)
+						Motion.tween(sprite.transformation, {_30: sprite.transformation._30 - p}, d).ease(Easing.OutBounce);
+					if (key == D)
+						Motion.tween(sprite.transformation, {_30: sprite.transformation._30 + p}, d).ease(Easing.OutBounce);
+				});
 
 				var light = new Light();
 				light.color = Color.fromFloats(0.9, 0.9, 0.5);
 				light.radius = 1.0;
 				light.power = 50;
-				light.transformation.translate(-0.5, 0.5, 2.5);
+				light.transformation.translate(-0.5, 0.5, -2.5);
+				Input.mouse.notify(null, null, function(x, y, mx, my) {
+					var p = S2D.screen2WorldSpace({x: x, y: y});
+					light.transformation.setTranslation(p);
+				});
 
 				System.notifyOnFrames(function(frames) {
 					S2D.render(frames[0]);
