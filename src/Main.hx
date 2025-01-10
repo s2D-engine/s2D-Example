@@ -14,8 +14,6 @@ import s2d.objects.Sprite;
 import s2d.graphics.PostProcessing;
 import s2d.graphics.postprocessing.Filter.Kernel;
 
-using s2d.core.utils.extensions.FastMatrix4Ext;
-
 class Main {
 	public static function main() {
 		System.start({
@@ -66,21 +64,22 @@ class Main {
 				sprite.material.emissionMap = Assets.images.emission;
 
 				var timer = new Timer(() -> {
-					sprite.transformation.rotate(1.0);
+					sprite.transformation.rotate(0.01);
 				}, 0.01);
 				timer.repeat(100000);
 
 				var p = 1.0;
 				var d = 0.5;
+				var t = sprite.transformation;
 				Input.keyboard.notify(function(key) {
 					if (key == W)
-						Motion.tween(sprite.transformation, {_31: sprite.transformation._31 - p}, d).ease(Easing.OutBounce);
+						Motion.tween(t, {translationY: t.translationY - 1.0}, d).ease(Easing.Bezier);
 					if (key == S)
-						Motion.tween(sprite.transformation, {_31: sprite.transformation._31 + p}, d).ease(Easing.OutBounce);
+						Motion.tween(t, {translationY: t.translationY + 1.0}, d).ease(Easing.Bezier);
 					if (key == A)
-						Motion.tween(sprite.transformation, {_30: sprite.transformation._30 - p}, d).ease(Easing.OutBounce);
+						Motion.tween(t, {translationX: t.translationX - 1.0}, d).ease(Easing.Bezier);
 					if (key == D)
-						Motion.tween(sprite.transformation, {_30: sprite.transformation._30 + p}, d).ease(Easing.OutBounce);
+						Motion.tween(t, {translationX: t.translationX + 1.0}, d).ease(Easing.Bezier);
 				});
 
 				var light = new Light();
@@ -90,7 +89,7 @@ class Main {
 				light.transformation.translate(-0.5, 0.5, -2.5);
 				Input.mouse.notify(null, null, function(x, y, mx, my) {
 					var p = S2D.screen2WorldSpace({x: x, y: y});
-					light.transformation.setTranslation(p);
+					light.transformation.translation = p;
 				});
 
 				System.notifyOnFrames(function(frames) {
