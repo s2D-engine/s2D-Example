@@ -1,7 +1,5 @@
 package;
 
-import s2d.animation.Easing;
-import s2d.animation.Motion;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
@@ -11,6 +9,8 @@ import s2d.core.Timer;
 import s2d.core.Input;
 import s2d.objects.Light;
 import s2d.objects.Sprite;
+import s2d.animation.Easing;
+import s2d.animation.Action;
 import s2d.graphics.PostProcessing;
 import s2d.graphics.postprocessing.Filter.Kernel;
 
@@ -73,13 +73,21 @@ class Main {
 				var t = sprite.transformation;
 				Input.keyboard.notify(function(key) {
 					if (key == W)
-						Motion.tween(t, {translationY: t.translationY - 1.0}, d).ease(Easing.Bezier);
+						Action.tween(t.translationY, t.translationY - p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
+							t.translationY = v;
+						});
 					if (key == S)
-						Motion.tween(t, {translationY: t.translationY + 1.0}, d).ease(Easing.Bezier);
+						Action.tween(t.translationY, t.translationY + p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
+							t.translationY = v;
+						});
 					if (key == A)
-						Motion.tween(t, {translationX: t.translationX - 1.0}, d).ease(Easing.Bezier);
+						Action.tween(t.translationX, t.translationX - p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
+							t.translationX = v;
+						});
 					if (key == D)
-						Motion.tween(t, {translationX: t.translationX + 1.0}, d).ease(Easing.Bezier);
+						Action.tween(t.translationX, t.translationX + p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
+							t.translationX = v;
+						});
 				});
 
 				var light = new Light();
