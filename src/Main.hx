@@ -7,6 +7,7 @@ import kha.input.KeyCode;
 import s2d.S2D;
 import s2d.core.Timer;
 import s2d.core.Input;
+import s2d.math.SMath;
 import s2d.objects.Light;
 import s2d.objects.Sprite;
 import s2d.animation.Easing;
@@ -64,37 +65,33 @@ class Main {
 				sprite.material.emissionMap = Assets.images.emission;
 
 				var timer = new Timer(() -> {
-					sprite.transformation.rotate(0.01);
+					sprite.transformation.pushRotation(0.01);
 				}, 0.01);
 				timer.repeat(100000);
 
 				var p = 1.0;
 				var d = 0.5;
-				var t = sprite.transformation;
+
 				Input.keyboard.notify(function(key) {
 					if (key == W)
-						Action.tween(t.translationY, t.translationY - p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
-							t.translationY = v;
-						});
+						// sprite.location = vec3(p, 0.0, 0.0);
+						Action.tween(sprite.location, sprite.location - vec3(p, 0.0, 0.0), d).ease(Easing.OutQuad);
 					if (key == S)
-						Action.tween(t.translationY, t.translationY + p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
-							t.translationY = v;
-						});
+						sprite.location = -vec3(p, 0.0, 0.0);
+						// Action.tween(sprite.location, sprite.location + vec3(p, 0.0, 0.0), d).ease(Easing.OutQuad);
 					if (key == A)
-						Action.tween(t.translationX, t.translationX - p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
-							t.translationX = v;
-						});
+						sprite.location = vec3(0.0, p, 0.0);
+						// Action.tween(sprite.location, sprite.location - vec3(0.0, p, 0.0), d).ease(Easing.OutQuad);
 					if (key == D)
-						Action.tween(t.translationX, t.translationX + p, d).ease(Easing.OutQuad).notifyOnTick((v) -> {
-							t.translationX = v;
-						});
+						sprite.location = -vec3(0.0, p, 0.0);
+						// Action.tween(sprite.location, sprite.location + vec3(0.0, p, 0.0), d).ease(Easing.OutQuad);
 				});
 
 				var light = new Light();
 				light.color = Color.fromFloats(0.9, 0.9, 0.5);
 				light.radius = 1.0;
 				light.power = 50;
-				light.transformation.translate(-0.5, 0.5, -2.5);
+				light.transformation.pushTranslation(-0.5, 0.5, -2.5);
 				Input.mouse.notify(null, null, function(x, y, mx, my) {
 					var p = S2D.screen2WorldSpace({x: x, y: y});
 					light.transformation.translation = p;
