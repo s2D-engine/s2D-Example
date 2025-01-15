@@ -1,10 +1,13 @@
 package;
 
+import s2d.events.Dispatcher;
+import s2d.graphics.materials.Material;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
 // s2d
 import s2d.S2D;
+import s2d.core.Time;
 import s2d.core.Timer;
 import s2d.core.Input;
 import s2d.math.SMath;
@@ -13,7 +16,7 @@ import s2d.objects.Sprite;
 import s2d.animation.Easing;
 import s2d.animation.Action;
 import s2d.graphics.PostProcessing;
-import s2d.graphics.postprocessing.Filter.Kernel;
+import s2d.graphics.postprocessing.Filter;
 
 class Main {
 	public static function main() {
@@ -41,8 +44,16 @@ class Main {
 
 			S2D.scale = 2;
 
+			#if S2D_PP_MIST
+			PostProcessing.mist.color = Black;
+			#end
+			#if S2D_PP_BLOOM
+			PostProcessing.bloom.radius = 4.0;
+			PostProcessing.bloom.intensity = 0.75;
+			PostProcessing.bloom.threshold = 0.25;
+			#end
 			#if S2D_PP_FILTER
-			PostProcessing.filter.addKernel(Kernel.Sharpen);
+			PostProcessing.filter.addKernel(Filter.Sharpen);
 			#end
 			#if S2D_PP_FISHEYE
 			PostProcessing.fisheye.strength = -1.0;
@@ -58,43 +69,61 @@ class Main {
 				S2D.stage.environmentMap = Assets.images.environment;
 				#end
 
+				var mat = new Material();
+				mat.albedoMap = Assets.images.albedo;
+				mat.normalMap = Assets.images.normal;
+				mat.ormMap = Assets.images.orm;
+				mat.emissionMap = Assets.images.emission;
+
 				var sprite = new Sprite();
-				sprite.material.albedoMap = Assets.images.albedo;
-				sprite.material.normalMap = Assets.images.normal;
-				sprite.material.ormMap = Assets.images.orm;
-				sprite.material.emissionMap = Assets.images.emission;
+				sprite.material = mat;
+				Dispatcher.add(() -> sprite.z > 0, () -> trace("YEAH"));
 
 				var timer = new Timer(() -> {
-					sprite.transformation.pushRotation(0.01);
+					sprite.rotateG(0.01);
 				}, 0.01);
 				timer.repeat(100000);
 
-				var p = 1.0;
-				var d = 0.5;
-
+				var d = 0.50;
+				var speed = 2.5;
 				Input.keyboard.notify(function(key) {
-					if (key == W)
-						// sprite.location = vec3(p, 0.0, 0.0);
-						Action.tween(sprite.location, sprite.location - vec3(p, 0.0, 0.0), d).ease(Easing.OutQuad);
-					if (key == S)
-						sprite.location = -vec3(p, 0.0, 0.0);
-						// Action.tween(sprite.location, sprite.location + vec3(p, 0.0, 0.0), d).ease(Easing.OutQuad);
-					if (key == A)
-						sprite.location = vec3(0.0, p, 0.0);
-						// Action.tween(sprite.location, sprite.location - vec3(0.0, p, 0.0), d).ease(Easing.OutQuad);
-					if (key == D)
-						sprite.location = -vec3(0.0, p, 0.0);
-						// Action.tween(sprite.location, sprite.location + vec3(0.0, p, 0.0), d).ease(Easing.OutQuad);
+					if (key == W) {
+						Action.tween(d, (f) -> {
+							sprite.moveG(0.0, -speed * Time.delta * f);
+						}).ease(Easing.OutCubic);
+					}
+					if (key == S) {
+						Action.tween(d, (f) -> {
+							sprite.moveG(0.0, speed * Time.delta * f);
+						}).ease(Easing.OutCubic);
+					}
+					if (key == A) {
+						Action.tween(d, (f) -> {
+							sprite.moveG(-speed * Time.delta * f, 0.0);
+						}).ease(Easing.OutCubic);
+					}
+					if (key == D) {
+						Action.tween(d, (f) -> {
+							sprite.moveG(speed * Time.delta * f, 0.0);
+						}).ease(Easing.OutCubic);
+					}
+				});
+				Input.mouse.notify(null, null, null, function(delta) {
+					Action.tween(d, (f) -> {
+						f = 0.1 + 1.0 - abs(f - 0.5) * 2.0;
+						sprite.z += f * delta * 0.01;
+					}).ease(Easing.OutCubic);
 				});
 
 				var light = new Light();
 				light.color = Color.fromFloats(0.9, 0.9, 0.5);
 				light.radius = 1.0;
 				light.power = 50;
-				light.transformation.pushTranslation(-0.5, 0.5, -2.5);
+				light.addChild(sprite);
+
 				Input.mouse.notify(null, null, function(x, y, mx, my) {
 					var p = S2D.screen2WorldSpace({x: x, y: y});
-					light.transformation.translation = p;
+					light.moveToG(p.xy);
 				});
 
 				System.notifyOnFrames(function(frames) {
