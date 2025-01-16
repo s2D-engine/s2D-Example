@@ -1,7 +1,5 @@
 package;
 
-import s2d.events.Dispatcher;
-import s2d.graphics.materials.Material;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
@@ -10,13 +8,16 @@ import s2d.S2D;
 import s2d.core.Time;
 import s2d.core.Timer;
 import s2d.core.Input;
+import s2d.core.formats.TGA;
 import s2d.math.SMath;
 import s2d.objects.Light;
 import s2d.objects.Sprite;
 import s2d.animation.Easing;
 import s2d.animation.Action;
 import s2d.graphics.PostProcessing;
+import s2d.graphics.materials.Material;
 import s2d.graphics.postprocessing.Filter;
+import s2d.events.Dispatcher;
 
 class Main {
 	public static function main() {
@@ -42,7 +43,7 @@ class Main {
 				}
 			});
 
-			S2D.scale = 2;
+			S2D.scale = 1.5;
 
 			#if S2D_PP_MIST
 			PostProcessing.mist.color = Black;
@@ -53,7 +54,7 @@ class Main {
 			PostProcessing.bloom.threshold = 0.25;
 			#end
 			#if S2D_PP_FILTER
-			PostProcessing.filter.addKernel(Filter.Sharpen);
+			PostProcessing.filter.addKernel(Filter.BoxBlur);
 			#end
 			#if S2D_PP_FISHEYE
 			PostProcessing.fisheye.strength = -1.0;
@@ -70,14 +71,17 @@ class Main {
 				#end
 
 				var mat = new Material();
-				mat.albedoMap = Assets.images.albedo;
+				mat.albedoMap = TGA.parseBlob(Assets.blobs.get("albedo_tga"));
 				mat.normalMap = Assets.images.normal;
 				mat.ormMap = Assets.images.orm;
 				mat.emissionMap = Assets.images.emission;
+				mat.depthScale = 0.75;
+
+				var sprite1 = new Sprite();
+				sprite1.material = mat;
 
 				var sprite = new Sprite();
 				sprite.material = mat;
-				Dispatcher.add(() -> sprite.z > 0, () -> trace("YEAH"));
 
 				var timer = new Timer(() -> {
 					sprite.rotateG(0.01);

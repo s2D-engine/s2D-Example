@@ -17,7 +17,7 @@ process.defines = [
     // "S2D_PP_BLOOM",
     // "S2D_PP_FISHEYE",
     // "S2D_PP_FILTER",
-    // "S2D_PP_COMPOSITOR",
+    "S2D_PP_COMPOSITOR",
 ];
 await project.addProject("s2D");
 
