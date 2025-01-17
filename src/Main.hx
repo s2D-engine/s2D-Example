@@ -66,7 +66,7 @@ class Main {
 			Assets.loadEverything(function() {
 				S2D.compile();
 
-				#if S2D_RP_ENV_LIGHTING
+				#if (S2D_RP_ENV_LIGHTING == 1)
 				S2D.stage.environmentMap = Assets.images.environment;
 				#end
 
