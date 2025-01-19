@@ -1,5 +1,6 @@
 package;
 
+import s2d.Layer;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
@@ -8,14 +9,12 @@ import s2d.S2D;
 import s2d.core.Time;
 import s2d.core.Timer;
 import s2d.core.Input;
-import s2d.core.formats.TGA;
 import s2d.math.SMath;
 import s2d.objects.Light;
 import s2d.objects.Sprite;
 import s2d.animation.Easing;
 import s2d.animation.Action;
 import s2d.graphics.PostProcessing;
-import s2d.graphics.materials.Material;
 import s2d.graphics.postprocessing.Filter;
 import s2d.events.Dispatcher;
 
@@ -54,7 +53,7 @@ class Main {
 			PostProcessing.bloom.threshold = 0.25;
 			#end
 			#if S2D_PP_FILTER
-			PostProcessing.filter.addKernel(Filter.BoxBlur);
+			PostProcessing.filter.addKernel(Filter.Sharpen);
 			#end
 			#if S2D_PP_FISHEYE
 			PostProcessing.fisheye.strength = -1.0;
@@ -70,23 +69,13 @@ class Main {
 				S2D.stage.environmentMap = Assets.images.environment;
 				#end
 
-				var mat = new Material();
-				mat.albedoMap = TGA.parseBlob(Assets.blobs.get("albedo_tga"));
-				mat.normalMap = Assets.images.normal;
-				mat.ormMap = Assets.images.orm;
-				mat.emissionMap = Assets.images.emission;
-				mat.depthScale = 0.75;
+				var layer = new Layer();
 
-				var sprite1 = new Sprite();
-				sprite1.material = mat;
-
-				var sprite = new Sprite();
-				sprite.material = mat;
-
-				var timer = new Timer(() -> {
-					sprite.rotateG(0.01);
-				}, 0.01);
-				timer.repeat(100000);
+				var sprite = new Sprite(layer);
+				sprite.albedoMap = Assets.images.albedo;
+				sprite.normalMap = Assets.images.normal;
+				sprite.ormMap = Assets.images.orm;
+				sprite.emissionMap = Assets.images.emission;
 
 				var d = 0.50;
 				var speed = 2.5;
@@ -112,23 +101,25 @@ class Main {
 						}).ease(Easing.OutCubic);
 					}
 				});
-				Input.mouse.notify(null, null, null, function(delta) {
-					Action.tween(d, (f) -> {
-						f = 0.1 + 1.0 - abs(f - 0.5) * 2.0;
-						sprite.z += f * delta * 0.01;
-					}).ease(Easing.OutCubic);
-				});
 
-				var light = new Light();
+				var light = new Light(layer);
 				light.color = Color.fromFloats(0.9, 0.9, 0.5);
 				light.radius = 1.0;
-				light.power = 50;
-				light.addChild(sprite);
+				light.power = 10;
+				light.z = 0.1;
+				light.volume = 0.05;
 
 				Input.mouse.notify(null, null, function(x, y, mx, my) {
 					var p = S2D.screen2WorldSpace({x: x, y: y});
 					light.moveToG(p.xy);
+				}, function(delta) {
+					Action.tween(d, (f) -> {
+						f = 0.1 + 1.0 - abs(f - 0.5) * 2.0;
+						sprite.rotation += f * delta * Time.delta;
+					}).ease(Easing.OutCubic);
 				});
+
+				S2D.stage.layers = [layer];
 
 				System.notifyOnFrames(function(frames) {
 					S2D.render(frames[0]);
