@@ -14,7 +14,7 @@ process.defines = [
     "S2D_LIGHTING",
     "S2D_LIGHTING_SHADOWS",
     "S2D_LIGHTING_DEFERRED",
-    // "S2D_LIGHTING_ENVIRONMENT",
+    "S2D_LIGHTING_ENVIRONMENT",
     // "S2D_PP_BLOOM",
     // "S2D_PP_FISHEYE",
     // "S2D_PP_FILTER",
