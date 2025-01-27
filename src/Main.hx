@@ -1,5 +1,6 @@
 package;
 
+import s2d.ui.elements.shapes.Rectangle;
 import s2d.objects.EmptyObject;
 import kha.math.FastVector2;
 import haxe.ds.Vector;
@@ -30,16 +31,16 @@ class Main {
 			window.notifyOnResize(S2D.resize);
 
 			S2D.scale = 2.5;
-			// S2D.resolutionScale = 0.125;
 
 			Assets.loadEverything(function() {
 				S2D.set();
+
+				var layer = new Layer(S2D.stage);
 
 				#if (S2D_LIGHTING_ENVIRONMENT == 1)
 				S2D.stage.environmentMap = Assets.images.environment;
 				#end
 
-				var layer = new Layer();
 				var atlas = new SpriteAtlas(layer);
 				#if (S2D_LIGHTING == 1)
 				atlas.albedoMap = Assets.images.albedo;
@@ -50,62 +51,49 @@ class Main {
 				atlas.textureMap = Assets.images.albedo;
 				#end
 
-				#if (S2D_LIGHTING_SHADOWS == 1)
 				var sv = [
-					[
-						new FastVector2(-0.5, -0.5),
-						new FastVector2(-0.5, 0.5),
-						new FastVector2(0.5, 0.5),
-						new FastVector2(0.5, -0.5)
-					]
+					new FastVector2(-0.5, -0.5),
+					new FastVector2(-0.5, 0.5),
+					new FastVector2(0.5, 0.5),
+					new FastVector2(0.5, -0.5)
 				];
-				#end
 
-				var a = new EmptyObject(layer);
-				new Timer(() -> {
-					a.rotateG(0.01);
-				}, 1 / 60).repeat(10000);
-
-				var n = 5;
-				for (i in 0...n) {
-					var sprite = new Sprite(atlas);
-					sprite.setTransformationSource(a);
-					sprite.isCastingShadows = true;
-
-					sprite.z = (i) / n;
-					sprite.moveG((i / n * 2.0 - 1.0) * S2D.scale);
+				var n = 15;
+				for (_ in 0...n) {
+					var sprite = new Sprite(atlas, sv);
 					#if (S2D_LIGHTING_SHADOWS == 1)
-					sprite.setMesh(sv);
+					sprite.isCastingShadows = true;
+					sprite.shadowOpacity = 1.0;
 					#end
+
+					sprite.z = Math.random();
+					sprite.moveG((Math.random() * 2.0 - 1.0) * S2D.scale, (Math.random() * 2.0 - 1.0) * S2D.scale);
 				}
 
-				var light2 = new Light(layer);
-				light2.isMappingShadows = true;
-				light2.color = Color.fromFloats(0.85, 0.15, 0.85);
-				light2.power = 15.0;
-				light2.z = 1.0;
-				#if (S2D_LIGHTING_DEFERRED == 1)
-				light2.volume = 0.1;
-				#end
+				var al = new EmptyObject(layer);
+				var l = 1;
+				for (_ in 0...l) {
+					var light = new Light(layer);
+					#if (S2D_LIGHTING_SHADOWS == 1)
+					light.isMappingShadows = true;
+					#end
+					light.setParent(al);
 
-				var light1 = new Light(layer);
-				light1.isMappingShadows = true;
-				light1.color = Color.fromFloats(0.85, 0.85, 0.15);
-				light1.power = 50.0;
-				light1.z = 1.0;
-				#if (S2D_LIGHTING_DEFERRED == 1)
-				light2.volume = 0.1;
-				#end
-
-				S2D.stage.layers = [layer];
+					light.radius = 0.0;
+					light.color = Color.fromFloats(Math.random(), Math.random(), Math.random());
+					light.z = 0.5;
+					// light.volume = 0.1;
+					// light.moveG((Math.random() * 2.0 - 1.0) * S2D.scale * 2, (Math.random() * 2.0 - 1.0) * S2D.scale * 2);
+				}
 
 				Input.mouse.notify(null, null, function(x, y, mx, my) {
 					var p = S2D.screen2WorldSpace({x: x, y: y});
-					light1.x = p.x - 2.0;
-					light1.y = p.y;
-					light2.x = p.x + 2.0;
-					light2.y = p.y;
+					al.moveToG(p);
+				}, function(delta) {
+					for (light in layer.lights)
+						light.radius += delta / 10;
 				});
+
 				Input.keyboard.notify(function(key:KeyCode) {
 					switch (key) {
 						case F11:
@@ -118,6 +106,15 @@ class Main {
 							null;
 					}
 				});
+
+				var rect = new Rectangle(S2D.ui);
+				rect.x = 50;
+				rect.y = 50;
+				rect.width = 500;
+				rect.height = 500;
+				rect.opacity = 0.5;
+				rect.softness = 10;
+				rect.radius = 100;
 
 				System.notifyOnFrames(function(frames) {
 					S2D.render(frames[0]);
