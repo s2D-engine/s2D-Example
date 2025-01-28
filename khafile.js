@@ -9,7 +9,7 @@ project.addAssets("assets/**", {
 
 // s2D Compiler Flags
 process.defines = [
-    "S2D_DEBUG_FPS",
+    // "S2D_DEBUG_FPS",
     "S2D_SPRITE_INSTANCING",
     "S2D_LIGHTING",
     // "S2D_LIGHTING_VOLUMETRIC",
