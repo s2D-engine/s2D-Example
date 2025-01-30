@@ -2,26 +2,17 @@ package;
 
 import s2d.ui.positioning.Alignment;
 import s2d.ui.elements.MouseArea;
-import kha.Window;
 import s2d.ui.elements.Text;
-import s2d.core.Time;
-import s2d.animation.Easing;
-import s2d.animation.Action;
 import s2d.App;
 import s2d.ui.elements.shapes.Rectangle;
-import s2d.objects.EmptyObject;
 import kha.math.FastVector2;
-import haxe.ds.Vector;
 import kha.System;
 import kha.Assets;
 import kha.input.KeyCode;
-import kha.math.FastVector4;
 // s2d
 import s2d.S2D;
 import s2d.Layer;
 import s2d.SpriteAtlas;
-import s2d.core.Timer;
-import s2d.objects.Light;
 import s2d.objects.Sprite;
 
 class Main {
@@ -123,8 +114,11 @@ class Main {
 				rect1.color = Red;
 			});
 
-			App.input.mouse.notifyOnMoved(function(dx, dy) {
-				var p = S2D.screen2WorldSpace({x: App.input.mouse.x, y: App.input.mouse.y});
+			App.input.keyboard.notifyOnHold((key) -> {
+				trace(key);
+			});
+			App.input.mouse.notifyOnMoved(function(x, y, dx, dy) {
+				var p = S2D.screen2WorldSpace({x: x, y: y});
 				// al.moveToG(p);
 			});
 
@@ -147,6 +141,8 @@ class Main {
 						null;
 				}
 			});
+
+			App.input.keyboard.notifyOnHotKey({hotkey: [A, S], callback: () -> trace("AS")});
 
 			App.input.keyboard.notifyOnDown(function(key:KeyCode) {
 				switch (key) {
