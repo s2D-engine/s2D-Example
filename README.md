@@ -1,2 +1,2 @@
 # s2D-Example
-`git clone --recursive https://github.com/s2D-engine/s2D-Example.git`
+`git clone --recursive https://github.com/smoothie-ws/s2D-Example.git`
