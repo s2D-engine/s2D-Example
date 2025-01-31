@@ -107,12 +107,13 @@ class Main {
 			var mouseArea = new MouseArea();
 			mouseArea.setParent(rect1);
 			mouseArea.anchors.fill(mouseArea.parent);
-			mouseArea.notifyOnEntered(() -> {
+			mouseArea.notifyOnEntered((x, y) -> {
 				rect1.color = Green;
 			});
-			mouseArea.notifyOnExited(() -> {
+			mouseArea.notifyOnExited((x, y) -> {
 				rect1.color = Red;
 			});
+			mouseArea.notifyOnDoubleClicked((button, x, y) -> trace(button));
 
 			App.input.keyboard.notifyOnHold((key) -> {
 				trace(key);
@@ -142,7 +143,7 @@ class Main {
 				}
 			});
 
-			App.input.keyboard.notifyOnHotKey({hotkey: [A, S], callback: () -> trace("AS")});
+			App.input.keyboard.notifyOnHotKeyPressed({hotkey: [A, S], callback: () -> trace("AS")});
 
 			App.input.keyboard.notifyOnDown(function(key:KeyCode) {
 				switch (key) {
